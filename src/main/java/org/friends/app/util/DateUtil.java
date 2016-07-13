@@ -1,7 +1,7 @@
 package org.friends.app.util;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
@@ -9,7 +9,11 @@ public class DateUtil {
 
 	private static final String SHORT_PATTERN_EN = "yyyy-MM-dd";
 	private static final String SHORT_PATTERN_FR = "dd/MM/yyyy";
+	private static final String MEDIUM_PATTERN = "EE dd/MM/yyyy";
 	private static final String FULL_PATTERN = "EEEE dd/MM/yyyy";
+	private static final String DAYTEXT_PATTERN = "EEEE";
+
+	public static ZoneId EUROPE_PARIS  = ZoneId.of("Europe/Paris");
 
 	/**
 	 * @param date The date to format
@@ -22,11 +26,26 @@ public class DateUtil {
 	public static String dateToString(LocalDate date) {
 		return dateToString(date, null);
 	}
+	
+
 
 	public static String dateToFullString(LocalDate date) {
 		return getFullFormatter().format(date);
 	}
+	
+	public static String dateToDayString(LocalDate date) {
+		return getDayFormatter().format(date);
+	}
+	
+	public static String dateToMediumString(LocalDate date) {
+		return getMediumFormatter().format(date);
+	}
 
+	/**
+	 * Converti une date au format {@link #SHORT_PATTERN_EN} vers une LocalDate
+	 * @param maDate
+	 * @return
+	 */
 	public static LocalDate stringToDate(String maDate) {
 		return stringToDate(maDate, null);
 	}
@@ -43,22 +62,21 @@ public class DateUtil {
 	}
 	
 	private static DateTimeFormatter getFullFormatter() {
-		return DateTimeFormatter.ofPattern(FULL_PATTERN);
+		return DateTimeFormatter.ofPattern(FULL_PATTERN).withLocale(Locale.FRANCE);
 	}
 	
-	public static LocalDate rechercherDateLejourSuivant(LocalDate dateRecherche) {
-		if(DayOfWeek.FRIDAY.equals(dateRecherche.getDayOfWeek())){
-			dateRecherche = dateRecherche.plusDays(3);
-		}else if(DayOfWeek.SATURDAY.equals(dateRecherche.getDayOfWeek())){
-			dateRecherche = dateRecherche.plusDays(2);
-		}else{
-			dateRecherche = dateRecherche.plusDays(1);
-		}	
-		return dateRecherche;
+	private static DateTimeFormatter getDayFormatter() {
+		return DateTimeFormatter.ofPattern(DAYTEXT_PATTERN).withLocale(Locale.FRANCE);
 	}
 	
-	public static String rechercherStrLejourSuivant(LocalDate dateRecherche) {
-		return DateUtil.dateToString(rechercherDateLejourSuivant(dateRecherche));
-	}	
+	private static DateTimeFormatter getMediumFormatter() {
+		return DateTimeFormatter.ofPattern(MEDIUM_PATTERN).withLocale(Locale.FRANCE);
+	}
 	
+	/**
+	 * Get localized LocalDate, using Europe / Paris time zone.
+	 */
+	public static LocalDate now() {
+		return LocalDate.now(EUROPE_PARIS);
+	}
 }
